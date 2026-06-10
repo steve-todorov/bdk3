@@ -8,7 +8,7 @@ spec:
     kind: GitRepository
     name: app
   path: ./deploy/overlays/staging
-  targetNamespace: app-staging
+  targetNamespace: OWNER-REPO-app-staging
   prune: true
   interval: 1m
   postBuild:

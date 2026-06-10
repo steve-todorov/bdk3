@@ -1,0 +1,14 @@
+# Namespaces for the env Kustomizations. Flux Kustomization.spec.targetNamespace
+# sets the namespace on rendered objects but does NOT create the namespace —
+# this manifest does.
+#
+# Preview namespaces are created per-PR by the ResourceSet in flux/previews/.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: OWNER-REPO-app-staging
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: OWNER-REPO-app-production

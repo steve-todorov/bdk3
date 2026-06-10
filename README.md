@@ -39,9 +39,16 @@ After you push this directory to a new GitHub repo and the first workflow run co
    ```
    Without this branch, `production.yml` and `ImageUpdateAutomation app-production` cannot do anything.
 
-5. **Replace `OWNER/REPO`** in the YAML files under `deploy/` and `flux/`. Run from the repo root:
+5. **Replace placeholders** in the YAML files under `deploy/` and `flux/`. Two forms get substituted:
+   - `OWNER/REPO` → your GitHub owner/repo (used in image refs and Git URLs).
+   - `OWNER-REPO` → the same value with a dash instead of a slash (used as a Kubernetes namespace prefix; slashes aren't valid in namespace names).
+
+   Run from the repo root:
    ```sh
-   grep -rl 'OWNER/REPO' deploy flux | xargs sed -i 's|OWNER/REPO|<your-owner>/<your-repo>|g'
+   OWNER_REPO_SLASH="<your-owner>/<your-repo>"           # e.g. acme/myapp
+   OWNER_REPO_DASH="${OWNER_REPO_SLASH//\//-}"          # e.g. acme-myapp
+   grep -rl 'OWNER/REPO'  deploy flux | xargs sed -i "s|OWNER/REPO|${OWNER_REPO_SLASH}|g"
+   grep -rl 'OWNER-REPO'  deploy flux | xargs sed -i "s|OWNER-REPO|${OWNER_REPO_DASH}|g"
    ```
 
 ## Wiring Flux to this repo
@@ -87,9 +94,9 @@ After this, the bootstrap `Kustomization` discovers `flux/source.yaml`, `flux/im
 
 ## End-to-end flow
 
-- **Open a PR labeled `preview`** — `pr.yml` builds and pushes `ghcr.io/<owner>/<repo>:pr-<N>-<sha>`. `ResourceSetInputProvider` sees the labeled PR; `ResourceSet` materializes a namespace `pr-<N>`, a `ConfigMap`, and a per-PR `Kustomization` that deploys the app at `pr-<N>.preview.local.domain`. Update the PR head → new image, ResourceSet redeploys. Close the PR or remove the label → ResourceSet prunes everything.
-- **Push to `main`** — `staging.yml` builds `:main-<run>-<ts>`. `ImagePolicy app-staging` extracts the run number, picks the highest. `ImageUpdateAutomation app-staging` rewrites the staging overlay's image tag and commits back as `fluxcdbot`. `Kustomization app-staging` reconciles into the `app-staging` namespace.
-- **Push to `production`** — same pattern with `:production-<run>-<ts>` and the production overlay/branch.
+- **Open a PR labeled `preview`** — `pr.yml` builds and pushes `ghcr.io/<owner>/<repo>:pr-<N>-<sha>`. `ResourceSetInputProvider` sees the labeled PR; `ResourceSet` materializes a namespace `<owner>-<repo>-pr-<N>`, a `ConfigMap`, and a per-PR `Kustomization` that deploys the app at `pr-<N>.preview.local.domain`. Update the PR head → new image, ResourceSet redeploys. Close the PR or remove the label → ResourceSet prunes everything.
+- **Push to `main`** — `staging.yml` builds `:main-<run>-<ts>`. `ImagePolicy app-staging` extracts the run number, picks the highest. `ImageUpdateAutomation app-staging` rewrites the staging overlay's image tag and commits back as `fluxcdbot`. `Kustomization app-staging` reconciles into the `<owner>-<repo>-app-staging` namespace.
+- **Push to `production`** — same pattern with `:production-<run>-<ts>` and the production overlay/branch (namespace `<owner>-<repo>-app-production`).
 
 ## Verifying
 
@@ -101,8 +108,8 @@ kubectl -n flux-system get imageupdateautomation
 kubectl -n flux-system get kustomization
 kubectl -n flux-system get resourcesetinputprovider app-prs -o yaml | yq '.status'
 kubectl -n flux-system get resourceset app-previews -o yaml | yq '.status'
-kubectl get ns | grep -E '^(app-staging|app-production|pr-)'
-kubectl -n app-staging get pods,svc,ingress
+kubectl get ns | grep -- "-app-staging\|-app-production\|-pr-"
+kubectl -n <owner>-<repo>-app-staging get pods,svc,ingress
 ```
 
 ## Teardown

@@ -8,7 +8,7 @@ spec:
     kind: GitRepository
     name: app
   path: ./deploy/overlays/production
-  targetNamespace: app-production
+  targetNamespace: OWNER-REPO-app-production
   prune: true
   interval: 1m
   postBuild:

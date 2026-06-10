@@ -11,7 +11,7 @@ spec:
     - apiVersion: v1
       kind: Namespace
       metadata:
-        name: "pr-<< inputs.id >>"
+        name: "OWNER-REPO-pr-<< inputs.id >>"
 
     # Trampoline: ResourceSet expands << inputs.* >> here; kustomize-controller
     # then reads APP_ENV/HOSTNAME/DATABASE_URL from this ConfigMap via
@@ -37,7 +37,7 @@ spec:
           kind: GitRepository
           name: app
         path: ./deploy/base
-        targetNamespace: "pr-<< inputs.id >>"
+        targetNamespace: "OWNER-REPO-pr-<< inputs.id >>"
         prune: true
         interval: 1m
         postBuild:
