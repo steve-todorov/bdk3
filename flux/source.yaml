@@ -5,6 +5,8 @@ metadata:
   namespace: flux-system
 spec:
   url: https://github.com/steve-todorov/bdk3
+  secretRef:
+    name: flux-git-auth
   ref:
     branch: main
   interval: 1m
