@@ -6,7 +6,8 @@ metadata:
 spec:
   type: GitHubPullRequest
   url: https://github.com/steve-todorov/bdk3
-  interval: 1m
+  schedule:
+    - cron: "*/1 * * * *"
   filter:
     labels: ["preview"]
   secretRef:
