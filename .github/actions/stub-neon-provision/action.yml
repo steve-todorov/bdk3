@@ -1,0 +1,36 @@
+name: Stub Neon Provision
+description: >
+  Emits a deterministic fake postgres DSN for the given environment and writes it
+  to the workflow run summary. Drop-in replacement target for a real Neon API call.
+inputs:
+  env_name:
+    description: "preview / staging / production"
+    required: true
+  env_id:
+    description: "PR number or branch name, used to make the DSN unique per env"
+    required: true
+outputs:
+  database_url:
+    description: "Fake DSN with local.domain"
+    value: ${{ steps.gen.outputs.dsn }}
+runs:
+  using: composite
+  steps:
+    - id: gen
+      shell: bash
+      run: |
+        # TODO: replace this whole step with a real Neon API call.
+        # Real implementation would:
+        #   - POST to https://console.neon.tech/api/v2/projects/<id>/branches
+        #   - capture the connection_uri from the response
+        #   - push it to AWS Secrets Manager / SSM Parameter Store under a
+        #     deterministic path keyed by env_name + env_id
+        # For now: emit a deterministic fake DSN with local.domain.
+        DSN="postgres://app:stub-pw@${{ inputs.env_name }}-${{ inputs.env_id }}.local.domain:5432/app"
+        echo "dsn=${DSN}" >> "$GITHUB_OUTPUT"
+        {
+          echo "### Stubbed Neon DSN"
+          echo "- env: \`${{ inputs.env_name }}\`"
+          echo "- id: \`${{ inputs.env_id }}\`"
+          echo "- dsn: \`${DSN}\`"
+        } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+patches:
+  - path: replica-patch.yaml
+    target:
+      kind: Deployment
+      name: app
+images:
+  # ImageUpdateAutomation rewrites `newTag` in place using the setter comment.
+  - name: ghcr.io/OWNER/REPO
+    newName: ghcr.io/OWNER/REPO
+    newTag: placeholder # {"$imagepolicy": "flux-system:app-staging:tag"}
