@@ -18,11 +18,8 @@ spec:
         email: fluxcdbot@users.noreply.github.com
       messageTemplate: |
         chore(production): bump image
-        {{ range $filename, $changes := .Changed.FileChanges -}}
-        - {{ $filename }}:
-        {{ range $changes -}}
-          - {{ .OldValue }} -> {{ .NewValue }}
-        {{ end -}}
+        {{ range $filename, $_ := .Changed.FileChanges -}}
+        - {{ $filename }}
         {{ end -}}
     push:
       branch: production
