@@ -1,0 +1,13 @@
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSetInputProvider
+metadata:
+  name: app-prs
+  namespace: flux-system
+spec:
+  type: GitHubPullRequest
+  url: https://github.com/steve-todorov/bdk3
+  interval: 1m
+  filter:
+    labels: ["preview"]
+  secretRef:
+    name: github-token

@@ -1,0 +1,25 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: app-production
+  namespace: flux-system
+spec:
+  interval: 1m
+  sourceRef:
+    kind: GitRepository
+    name: app
+  git:
+    checkout:
+      ref:
+        branch: production
+    commit:
+      author:
+        name: fluxcdbot
+        email: fluxcdbot@users.noreply.github.com
+      messageTemplate: |
+        chore(production): bump image to {{range .Updated.Images}}{{println .}}{{end}}
+    push:
+      branch: production
+  update:
+    path: ./deploy/overlays/production
+    strategy: Setters

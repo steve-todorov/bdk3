@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: app
+  namespace: flux-system
+spec:
+  url: https://github.com/steve-todorov/bdk3
+  ref:
+    branch: main
+  interval: 1m

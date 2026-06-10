@@ -1,0 +1,14 @@
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: app-production
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: app
+  filterTags:
+    pattern: '^production-(?P<build>\d+)-\d+$'
+    extract: '$build'
+  policy:
+    numerical:
+      order: asc

@@ -1,0 +1,54 @@
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
+metadata:
+  name: app-previews
+  namespace: flux-system
+spec:
+  inputsFrom:
+    - kind: ResourceSetInputProvider
+      name: app-prs
+  resources:
+    - apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "pr-<< inputs.id >>"
+
+    # Trampoline: ResourceSet expands << inputs.* >> here; kustomize-controller
+    # then reads APP_ENV/HOSTNAME/DATABASE_URL from this ConfigMap via
+    # postBuild.substituteFrom below. Without this hop, << inputs.* >> would
+    # not reach kustomize-controller.
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: "app-preview-vars-<< inputs.id >>"
+        namespace: flux-system
+      data:
+        APP_ENV: "preview"
+        HOSTNAME: "pr-<< inputs.id >>.preview.local.domain"
+        DATABASE_URL: "postgres://app:stub-pw@pr-<< inputs.id >>.preview.local.domain:5432/app"
+
+    - apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: "app-pr-<< inputs.id >>"
+        namespace: flux-system
+      spec:
+        sourceRef:
+          kind: GitRepository
+          name: app
+        path: ./deploy/base
+        targetNamespace: "pr-<< inputs.id >>"
+        prune: true
+        interval: 1m
+        postBuild:
+          substituteFrom:
+            - kind: ConfigMap
+              name: "app-preview-vars-<< inputs.id >>"
+        patches:
+          - target:
+              kind: Deployment
+              name: app
+            patch: |
+              - op: replace
+                path: /spec/template/spec/containers/0/image
+                value: ghcr.io/steve-todorov/bdk3:pr-<< inputs.id >>-<< inputs.sha >>
