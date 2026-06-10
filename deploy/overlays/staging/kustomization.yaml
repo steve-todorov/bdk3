@@ -9,6 +9,6 @@ patches:
       name: app
 images:
   # ImageUpdateAutomation rewrites `newTag` in place using the setter comment.
-  - name: ghcr.io/OWNER/REPO
-    newName: ghcr.io/OWNER/REPO
+  - name: ghcr.io/steve-todorov/bdk3
+    newName: ghcr.io/steve-todorov/bdk3
     newTag: placeholder # {"$imagepolicy": "flux-system:app-staging:tag"}
