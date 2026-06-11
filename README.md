@@ -55,15 +55,13 @@ After you push this directory to a new GitHub repo and the first workflow run co
 
 Run from your k3d cluster's kubeconfig:
 
-```sh
-# 1a. PAT for the PR provider (ResourceSetInputProvider) — for a public repo, no
-#     scopes needed. For private, minimum scope is `repo:status` + read on PRs.
-kubectl -n flux-system create secret generic github-token \
-  --from-literal=token=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+One PAT, one Secret — used by `GitRepository` (read + `ImageUpdateAutomation` push) **and** `ResourceSetInputProvider` (read PRs). Use a fine-grained PAT scoped to this single repo with:
 
-# 1b. PAT for git push (ImageUpdateAutomation writes image-tag bumps back to the
-#     repo). Even public repos need auth for push. Fine-grained PAT recommended,
-#     scoped to this single repo with Contents: Read and write.
+- Repository permissions → **Contents: Read and write**
+- Repository permissions → **Pull requests: Read**
+
+```sh
+# 1. Create the shared Git auth Secret.
 kubectl -n flux-system create secret generic flux-git-auth \
   --from-literal=username=git \
   --from-literal=password=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -116,7 +114,7 @@ kubectl -n <owner>-<repo>-app-staging get pods,svc,ingress
 
 ```sh
 kubectl -n flux-system delete kustomization app-bootstrap   # tears down everything reconciled from flux/
-kubectl -n flux-system delete secret github-token
+kubectl -n flux-system delete secret flux-git-auth
 ```
 
 ## Deliberately out of scope
