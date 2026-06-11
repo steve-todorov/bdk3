@@ -11,4 +11,4 @@ images:
   # ImageUpdateAutomation rewrites `newTag` in place using the setter comment.
   - name: ghcr.io/steve-todorov/bdk3
     newName: ghcr.io/steve-todorov/bdk3
-    newTag: main-11-1781137331 # {"$imagepolicy": "flux-system:app-staging:tag"}
+    newTag: main-12-1781137468 # {"$imagepolicy": "flux-system:app-staging:tag"}
