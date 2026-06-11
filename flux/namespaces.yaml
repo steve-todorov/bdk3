@@ -6,9 +6,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: OWNER-REPO-app-staging
+  name: steve-todorov-bdk3-app-staging
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: OWNER-REPO-app-production
+  name: steve-todorov-bdk3-app-production
