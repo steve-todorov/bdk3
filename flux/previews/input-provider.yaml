@@ -11,4 +11,4 @@ spec:
   filter:
     labels: ["preview"]
   secretRef:
-    name: github-token
+    name: flux-git-auth
