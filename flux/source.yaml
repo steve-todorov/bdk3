@@ -1,3 +1,12 @@
+# Two GitRepository sources, one per long-lived branch.
+#
+# Why two: a Kustomization always reads from the branch its GitRepository tracks.
+# Without a per-branch source, both env Kustomizations would read from `main`,
+# and `app-production` would never see the image-tag bump that
+# `ImageUpdateAutomation app-production` writes to the `production` branch.
+#
+# Previews use `app` (main) since they read `./deploy/base` and override the
+# image inline from the PR head SHA.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -9,4 +18,17 @@ spec:
     name: flux-git-auth
   ref:
     branch: main
+  interval: 1m
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: app-production
+  namespace: flux-system
+spec:
+  url: https://github.com/steve-todorov/bdk3
+  secretRef:
+    name: flux-git-auth
+  ref:
+    branch: production
   interval: 1m

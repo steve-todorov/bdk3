@@ -6,7 +6,7 @@ metadata:
 spec:
   sourceRef:
     kind: GitRepository
-    name: app
+    name: app-production
   path: ./deploy/overlays/production
   targetNamespace: steve-todorov-bdk3-app-production
   prune: true

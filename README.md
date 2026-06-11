@@ -94,7 +94,7 @@ After this, the bootstrap `Kustomization` discovers `flux/source.yaml`, `flux/im
 
 - **Open a PR labeled `preview`** — `pr.yml` builds and pushes `ghcr.io/<owner>/<repo>:pr-<N>-<sha>`. `ResourceSetInputProvider` sees the labeled PR; `ResourceSet` materializes a namespace `<owner>-<repo>-pr-<N>`, a `ConfigMap`, and a per-PR `Kustomization` that deploys the app at `pr-<N>.preview.local.domain`. Update the PR head → new image, ResourceSet redeploys. Close the PR or remove the label → ResourceSet prunes everything.
 - **Push to `main`** — `staging.yml` builds `:main-<run>-<ts>`. `ImagePolicy app-staging` extracts the run number, picks the highest. `ImageUpdateAutomation app-staging` rewrites the staging overlay's image tag and commits back as `fluxcdbot`. `Kustomization app-staging` reconciles into the `<owner>-<repo>-app-staging` namespace.
-- **Push to `production`** — same pattern with `:production-<run>-<ts>` and the production overlay/branch (namespace `<owner>-<repo>-app-production`).
+- **Push to `production`** — same pattern with `:production-<run>-<ts>` and the production overlay/branch (namespace `<owner>-<repo>-app-production`). `Kustomization app-production` reads from a separate `GitRepository app-production` that tracks the `production` branch — required so it sees `ImageUpdateAutomation`'s commits, which land on `production`.
 
 ## Verifying
 
