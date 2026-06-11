@@ -10,4 +10,4 @@ APP_ENV=${APP_ENV:-unset}
 DATABASE_URL=${DATABASE_URL:-unset}
 EOF
 
-exec busybox httpd -f -p 8080 -h /srv
+exec httpd -f -p 8080 -h /srv
