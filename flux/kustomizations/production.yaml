@@ -8,7 +8,7 @@ spec:
     kind: GitRepository
     name: app
   path: ./deploy/overlays/production
-  targetNamespace: OWNER-REPO-app-production
+  targetNamespace: steve-todorov-bdk3-app-production
   prune: true
   interval: 1m
   postBuild:
