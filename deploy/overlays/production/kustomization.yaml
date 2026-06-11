@@ -10,4 +10,4 @@ patches:
 images:
   - name: ghcr.io/steve-todorov/bdk3
     newName: ghcr.io/steve-todorov/bdk3
-    newTag: production-4-1781139721 # {"$imagepolicy": "flux-system:app-production:tag"}
+    newTag: production-5-1781140368 # {"$imagepolicy": "flux-system:app-production:tag"}
